@@ -1,6 +1,6 @@
-aiohttp = "*"
-asyncio = "*"
-pillow = "*"
-flask = "*"
-flask-restful = "*"
-python-decouple = "*"
+aiohttp
+asyncio
+pillow
+flask
+flask-restful
+python-decouple

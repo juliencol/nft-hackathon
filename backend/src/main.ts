@@ -16,6 +16,7 @@ app.get('/', (req, res) => {
 
 app.post('/create-flow', async (req, res) => {
   const { sender, receiver, monthlyAmount } = req.body;
+  // const monthlyAmount = await getMonthlyPayment();
   console.log(
     `Streaming ${monthlyAmount} USD monthly from ${sender} to ${receiver}.`
   );
