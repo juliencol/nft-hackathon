@@ -41,7 +41,7 @@ export const createFlow = async (
     View Your Stream At: https://app.superfluid.finance/dashboard/${receiverAddress}
     Network: Kovan
     Super Token: DAIx
-    Sender: 0xD74bBD48E59958925C8b718b5820F9F08c3dBa82
+    Sender: ${senderAddress}
     Receiver: ${receiverAddress},
     FlowRate: ${flowRate}
     `
