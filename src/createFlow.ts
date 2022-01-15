@@ -1,19 +1,24 @@
 import { Framework } from '@superfluid-finance/sdk-core';
 import { ethers } from 'ethers';
-import { INFURA_PROJECT_ID, PRIVATE_KEY } from './constants';
+import {
+  DAIX_SMART_CONTRACT,
+  INFURA_PROJECT_ID,
+  PRIVATE_KEY,
+} from './constants';
 
 export const createFlow = async (
   senderAddress: string,
   receiverAddress: string,
-  flowRate: string
+  flowRate: string,
+  network: string
 ) => {
   const provider = new ethers.providers.InfuraProvider(
-    'kovan',
+    network,
     INFURA_PROJECT_ID
   );
 
   const sf = await Framework.create({
-    networkName: 'kovan',
+    networkName: network,
     provider,
   });
 
@@ -22,7 +27,7 @@ export const createFlow = async (
     provider: provider,
   });
 
-  const DAIx = '0xe3cb950cb164a31c66e32c320a800d477019dcff';
+  const DAIx = DAIX_SMART_CONTRACT;
 
   try {
     const createFlowOperation = sf.cfaV1.createFlow({
@@ -39,7 +44,7 @@ export const createFlow = async (
     console.log(
       `Congrats - you've just created a money stream!
     View Your Stream At: https://app.superfluid.finance/dashboard/${receiverAddress}
-    Network: Kovan
+    Network: ${network}
     Super Token: DAIx
     Sender: ${senderAddress}
     Receiver: ${receiverAddress},
