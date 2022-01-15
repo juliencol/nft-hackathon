@@ -1,18 +1,29 @@
+import express from 'express';
+import cors from 'cors';
+
+import * as bodyParser from 'body-parser';
 import { createFlow } from './createFlow';
 
-const main = async () => {
-  const senderAddress: string = '0xb3EeFD96741d7d5Bf0CF416B196c80F191120CF3';
-  const receiverAddress: string = '0x191648DD89A1c3336A0CDaf429bFf9cDB3F2e1c3';
-  const flowrate: string = '10000000000000';
-  const network: string = 'kovan';
+const app = express();
+const port = process.env.PORT || 3000;
 
-  // Create a flow
-  return await createFlow(
-    senderAddress,
-    receiverAddress,
-    flowrate,
-    network
-  ).catch((error: Error) => console.error(error));
-};
+app.use(bodyParser.json());
+app.use(cors());
 
-main();
+app.get('/', (req, res) => {
+  res.send('API runing. Ready to accept requests.');
+});
+
+app.post('/create-flow', async (req, res) => {
+  const { sender, receiver, monthlyAmount } = req.body;
+  console.log(
+    `Streaming ${monthlyAmount} USD monthly from ${sender} to ${receiver}.`
+  );
+  await createFlow(sender, receiver, monthlyAmount)
+    .then((result) => res.send(result))
+    .catch((error: Error) => console.error(error));
+});
+
+app.listen(port, () => {
+  console.log(`App listening to port ${port}`);
+});
