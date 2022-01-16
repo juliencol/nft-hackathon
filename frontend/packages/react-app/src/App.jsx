@@ -1,6 +1,7 @@
 import Portis from "@portis/web3";
 import WalletConnectProvider from "@walletconnect/web3-provider";
-import { Alert, Button, Card, Col, Input, List, Menu, Row } from "antd";
+import { Alert, Button, Card, Col, Input, List, Menu, Row, Tooltip } from "antd";
+import { DownloadOutlined , CopyOutlined} from '@ant-design/icons';
 import "antd/dist/antd.css";
 import Authereum from "authereum";
 import {
@@ -27,7 +28,9 @@ import { Account, Address, AddressInput, Contract, Faucet, GasGauge, Header, Ram
 import { INFURA_ID, NETWORK, NETWORKS } from "./constants";
 import { Transactor } from "./helpers";
 import { useContractConfig } from "./hooks";
+import axios from "axios";
 // import Hints from "./Hints";
+
 
 const { BufferList } = require("bl");
 const ipfsAPI = require("ipfs-http-client");
@@ -93,6 +96,10 @@ const getFromIPFS = async hashToGet => {
     return content;
   }
 };
+
+
+
+
 
 // 🛰 providers
 if (DEBUG) console.log("📡 Connecting to Mainnet Ethereum");
@@ -188,6 +195,7 @@ const web3Modal = new Web3Modal({
   },
 });
 
+
 function App(props) {
   const mainnetProvider =
     poktMainnetProvider && poktMainnetProvider._isProvider
@@ -227,6 +235,26 @@ function App(props) {
     }
     getAddress();
   }, [userSigner]);
+
+  const [analyse, setAnalyse] = useState();
+  const [analyseResult, setAnalyseResult] = useState();
+
+  useEffect(() => {
+    async function analyseContract() {
+      const endpoint ='http://localhost:5000/flowrate'
+
+      const params = {
+        'filename': 'Employment-Agreement-Sample.jpg'
+      }
+      if (analyse) {
+        const response = await axios.get(endpoint,{params})
+        const data = response.data
+        console.log(data.monthly_amount)
+        setAnalyseResult(data.monthly_amount)
+      }
+    }
+    analyseContract();
+  }, [analyse])
 
   // You can warn the user if you would like them to be on a specific network
   const localChainId = localProvider && localProvider._network && localProvider._network.chainId;
@@ -515,26 +543,24 @@ function App(props) {
   const [transferToAddresses, setTransferToAddresses] = useState({});
   const [minting, setMinting] = useState(false);
   const [count, setCount] = useState(1);
+  const [recipientAddress, setRecipientAddress] = useState()
+  const [monthly, setMonthly] = useState();
 
   // the json for the nfts
   const json = {
     1: {
-      description: "It's actually a bison?",
-      external_url: "https://austingriffith.com/portfolio/paintings/", // <-- this can link to a page for the specific file too
-      image: "https://austingriffith.com/images/paintings/buffalo.jpg",
-      name: "Buffalo",
+      description: "Streaming 50 DAI per month...",
+      external_url: "https://i.ibb.co/Mshn0mQ/50cents-New.jpg", // <-- this can link to a page for the specific file too
+      image: "https://i.ibb.co/Mshn0mQ/50cents-New.jpg",
+      name: "50 DAI Stream",
       attributes: [
         {
-          trait_type: "BackgroundColor",
-          value: "green",
+          trait_type: "flowrate",
+          value: "0.00001929",
         },
         {
-          trait_type: "Eyes",
-          value: "googly",
-        },
-        {
-          trait_type: "Stamina",
-          value: 42,
+          trait_type: "Ending date",
+          value: "02/16/21",
         },
       ],
     },
@@ -642,8 +668,7 @@ function App(props) {
 
   const mintItem = async () => {
     // upload to ipfs
-    const uploaded = await ipfs.add(JSON.stringify(json[count]));
-    setCount(count + 1);
+    const uploaded = await ipfs.add(JSON.stringify(json[1]));
     console.log("Uploaded Hash: ", uploaded);
     const result = tx(
       writeContracts &&
@@ -667,6 +692,8 @@ function App(props) {
     );
   };
 
+
+
   return (
     <div className="App">
       {/* ✏️ Edit the header and change the title to your project name */}
@@ -681,7 +708,17 @@ function App(props) {
               }}
               to="/"
             >
-              YourCollectibles
+              My Tokens 🪙
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="/analyze">
+            <Link
+              onClick={() => {
+                setRoute("/analyze");
+              }}
+              to="/analyze"
+            >
+              Analyze contract 🔬
             </Link>
           </Menu.Item>
           <Menu.Item key="/transfers">
@@ -691,52 +728,147 @@ function App(props) {
               }}
               to="/transfers"
             >
-              Transfers
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="/ipfsup">
-            <Link
-              onClick={() => {
-                setRoute("/ipfsup");
-              }}
-              to="/ipfsup"
-            >
-              IPFS Upload
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="/ipfsdown">
-            <Link
-              onClick={() => {
-                setRoute("/ipfsdown");
-              }}
-              to="/ipfsdown"
-            >
-              IPFS Download
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="/debugcontracts">
-            <Link
-              onClick={() => {
-                setRoute("/debugcontracts");
-              }}
-              to="/debugcontracts"
-            >
-              Debug Contracts
+              Send stream 📩
             </Link>
           </Menu.Item>
         </Menu>
         <Switch>
           <Route exact path="/">
             <div style={{ width: 640, margin: "auto", marginTop: 32, paddingBottom: 32 }}>
+              <List
+                bordered
+                dataSource={yourCollectibles}
+                renderItem={item => {
+                  const id = item.id.toNumber();
+                  return (
+                    <List.Item key={id + "_" + item.uri + "_" + item.owner}>
+                      <Card
+                        title={
+                          <div>
+                            <span style={{ fontSize: 16, marginRight: 8 }}>#{id}</span> {item.name}
+                          </div>
+                        }
+                      >
+                        <div>
+                          <img src={item.image} style={{ maxWidth: 150 }} />
+                        </div>
+                        <div>{item.description}</div>
+                      </Card>
+
+                      <div>
+                        owner:{" "}
+                        <Address
+                          address={item.owner}
+                          ensProvider={mainnetProvider}
+                          blockExplorer={blockExplorer}
+                          fontSize={16}
+                        />
+                        <AddressInput
+                          ensProvider={mainnetProvider}
+                          placeholder="transfer to address"
+                          value={transferToAddresses[id]}
+                          onChange={newValue => {
+                            const update = {};
+                            update[id] = newValue;
+                            setTransferToAddresses({ ...transferToAddresses, ...update });
+                          }}
+                        />
+                        <Button
+                          onClick={() => {
+                            console.log("writeContracts", writeContracts);
+                            tx(writeContracts.YourCollectible.transferFrom(address, transferToAddresses[id], id));
+                          }}
+                        >
+                          Transfer
+                        </Button>
+                      </div>
+                    </List.Item>
+                  );
+                }}
+              />
+            </div>
+          </Route>
+          <Route path="/analyze">
+            <div style={{ width: 500, margin: "auto", marginTop: 32, paddingBottom: 0 }}>
+              <Button shape="round" icon={<DownloadOutlined />} size="large">
+                Upload (image or PDF)
+              </Button>
+            </div>
+            <div style={{ width: 500, margin: "auto", marginTop: 32, paddingBottom: 32 }}>
+              <Card 
+                title={
+                  <div>
+                    <span style={{ fontSize: 16, marginRight: 8 }}></span> Employment_agreement.jpg
+                  </div>
+                }
+              >
+                <div>
+                  <img src="https://i.ibb.co/72q9tGh/Employment-Agreement-Sample.jpg" style={{ maxWidth: 400 }} />
+                </div>
+              </Card>
+            </div>
+            <div style= {{paddingBottom: 32 }}>
+              <Button 
+                type="primary"
+                onClick={ () => {
+                  setAnalyse(true)
+                }}
+              >
+                Analyze
+              </Button>
+            </div>
+            <div style={{ width: 500, margin: "auto", paddingBottom: 32 }}>
+              <Input.Group compact>
+                <Input
+                  style={{ width: 'calc(100% - 200px)' }}
+                  placeholder="Monthly Salary"
+                  value = {analyseResult}
+                  addonAfter = " DAI /month "
+                />
+              </Input.Group>
+            </div>
+            
+          </Route>
+          <Route path="/transfers">
+            <div style={{ width: 500, margin: "auto", marginTop: 20, paddingBottom: 32 }}>
+              <AddressInput
+                ensProvider={mainnetProvider}
+                placeholder="Recipient Address"
+                value={recipientAddress}
+                onChange={newValue => {
+                  setRecipientAddress(newValue)
+                }}
+              />
+            </div>
+            <div style={{ width: 600, margin: "auto", paddingBottom: 32 }}>
+              <Input.Group compact>
+                <Input
+                  style={{ width: 'calc(100% - 200px)' }}
+                  defaultValue = {analyseResult}
+                  addonAfter = " DAI /month "
+                />
+              </Input.Group>
+            </div>
+            <div style={{ width: 640, margin: "auto", marginTop: 32, paddingBottom: 32 }}>
               <Button
                 disabled={minting}
                 shape="round"
                 size="large"
                 onClick={() => {
-                  mintItem();
+                  mintItem();                  
                 }}
               >
-                MINT NFT
+                🪙 Generate Stream Token 🪙
+              </Button>
+              <Button
+                disabled={minting}
+                shape="round"
+                size="large"
+                onClick={() => {
+                  tx(writeContracts.YourCollectible.transferFrom(address, recipientAddress, 0));
+                }}
+              >
+                🚀 Create Money Flow 🚀
               </Button>
             </div>
             <div style={{ width: 640, margin: "auto", marginTop: 32, paddingBottom: 32 }}>
@@ -792,9 +924,6 @@ function App(props) {
                 }}
               />
             </div>
-          </Route>
-
-          <Route path="/transfers">
             <div style={{ width: 600, margin: "auto", marginTop: 32, paddingBottom: 32 }}>
               <List
                 bordered
@@ -812,90 +941,6 @@ function App(props) {
             </div>
           </Route>
 
-          <Route path="/ipfsup">
-            <div style={{ paddingTop: 32, width: 740, margin: "auto", textAlign: "left" }}>
-              <ReactJson
-                style={{ padding: 8 }}
-                src={yourJSON}
-                theme="pop"
-                enableClipboard={false}
-                onEdit={(edit, a) => {
-                  setYourJSON(edit.updated_src);
-                }}
-                onAdd={(add, a) => {
-                  setYourJSON(add.updated_src);
-                }}
-                onDelete={(del, a) => {
-                  setYourJSON(del.updated_src);
-                }}
-              />
-            </div>
-
-            <Button
-              style={{ margin: 8 }}
-              loading={sending}
-              size="large"
-              shape="round"
-              type="primary"
-              onClick={async () => {
-                console.log("UPLOADING...", yourJSON);
-                setSending(true);
-                setIpfsHash();
-                const result = await ipfs.add(JSON.stringify(yourJSON)); // addToIPFS(JSON.stringify(yourJSON))
-                if (result && result.path) {
-                  setIpfsHash(result.path);
-                }
-                setSending(false);
-                console.log("RESULT:", result);
-              }}
-            >
-              Upload to IPFS
-            </Button>
-
-            <div style={{ padding: 16, paddingBottom: 150 }}>{ipfsHash}</div>
-          </Route>
-          <Route path="/ipfsdown">
-            <div style={{ paddingTop: 32, width: 740, margin: "auto" }}>
-              <Input
-                value={ipfsDownHash}
-                placeHolder="IPFS hash (like QmadqNw8zkdrrwdtPFK1pLi8PPxmkQ4pDJXY8ozHtz6tZq)"
-                onChange={e => {
-                  setIpfsDownHash(e.target.value);
-                }}
-              />
-            </div>
-            <Button
-              style={{ margin: 8 }}
-              loading={sending}
-              size="large"
-              shape="round"
-              type="primary"
-              onClick={async () => {
-                console.log("DOWNLOADING...", ipfsDownHash);
-                setDownloading(true);
-                setIpfsContent();
-                const result = await getFromIPFS(ipfsDownHash); // addToIPFS(JSON.stringify(yourJSON))
-                if (result && result.toString) {
-                  setIpfsContent(result.toString());
-                }
-                setDownloading(false);
-              }}
-            >
-              Download from IPFS
-            </Button>
-
-            <pre style={{ padding: 16, width: 500, margin: "auto", paddingBottom: 150 }}>{ipfsContent}</pre>
-          </Route>
-          <Route path="/debugcontracts">
-            <Contract
-              name="YourCollectible"
-              signer={userSigner}
-              provider={localProvider}
-              address={address}
-              blockExplorer={blockExplorer}
-              contractConfig={contractConfig}
-            />
-          </Route>
         </Switch>
       </BrowserRouter>
 
