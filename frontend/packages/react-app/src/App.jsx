@@ -238,6 +238,7 @@ function App(props) {
 
   const [analyse, setAnalyse] = useState();
   const [analyseResult, setAnalyseResult] = useState();
+  const [stream, launchStream] = useState();
 
   useEffect(() => {
     async function analyseContract() {
@@ -255,6 +256,24 @@ function App(props) {
     }
     analyseContract();
   }, [analyse])
+
+  useEffect(() => {
+    async function createFlow() {
+      const endpoint ='http://localhost:3001/create-flow'
+
+      const body = {
+        "sender": address,
+        "receiver": recipientAddress,
+        "monthlyAmount": 50
+      }
+      if (stream) {
+        const response = await axios.post(endpoint,body)
+        const data = response.data
+        console.log(data)
+      }
+    }
+    createFlow();
+  }, [stream])
 
   // You can warn the user if you would like them to be on a specific network
   const localChainId = localProvider && localProvider._network && localProvider._network.chainId;
@@ -550,8 +569,8 @@ function App(props) {
   const json = {
     1: {
       description: "Streaming 50 DAI per month...",
-      external_url: "https://i.ibb.co/Mshn0mQ/50cents-New.jpg", // <-- this can link to a page for the specific file too
-      image: "https://i.ibb.co/Mshn0mQ/50cents-New.jpg",
+      external_url: "https://austingriffith.com/portfolio/paintings/", // <-- this can link to a page for the specific file too
+      image: "https://i.ibb.co/D9jrQ78/nft.png",
       name: "50 DAI Stream",
       attributes: [
         {
@@ -565,102 +584,82 @@ function App(props) {
       ],
     },
     2: {
-      description: "What is it so worried about?",
+      description: "Streaming 50 DAI per month...",
       external_url: "https://austingriffith.com/portfolio/paintings/", // <-- this can link to a page for the specific file too
-      image: "https://austingriffith.com/images/paintings/zebra.jpg",
-      name: "Zebra",
+      image: "https://i.ibb.co/D9jrQ78/nft.png",
+      name: "50 DAI Stream",
       attributes: [
         {
-          trait_type: "BackgroundColor",
-          value: "blue",
+          trait_type: "flowrate",
+          value: "0.00001929",
         },
         {
-          trait_type: "Eyes",
-          value: "googly",
-        },
-        {
-          trait_type: "Stamina",
-          value: 38,
+          trait_type: "Ending date",
+          value: "02/16/21",
         },
       ],
     },
     3: {
-      description: "What a horn!",
+      description: "Streaming 50 DAI per month...",
       external_url: "https://austingriffith.com/portfolio/paintings/", // <-- this can link to a page for the specific file too
-      image: "https://austingriffith.com/images/paintings/rhino.jpg",
-      name: "Rhino",
+      image: "https://i.ibb.co/D9jrQ78/nft.png",
+      name: "50 DAI Stream",
       attributes: [
         {
-          trait_type: "BackgroundColor",
-          value: "pink",
+          trait_type: "flowrate",
+          value: "0.00001929",
         },
         {
-          trait_type: "Eyes",
-          value: "googly",
-        },
-        {
-          trait_type: "Stamina",
-          value: 22,
+          trait_type: "Ending date",
+          value: "02/16/21",
         },
       ],
     },
     4: {
-      description: "Is that an underbyte?",
+      description: "Streaming 50 DAI per month...",
       external_url: "https://austingriffith.com/portfolio/paintings/", // <-- this can link to a page for the specific file too
-      image: "https://austingriffith.com/images/paintings/fish.jpg",
-      name: "Fish",
+      image: "https://i.ibb.co/D9jrQ78/nft.png",
+      name: "50 DAI Stream",
       attributes: [
         {
-          trait_type: "BackgroundColor",
-          value: "blue",
+          trait_type: "flowrate",
+          value: "0.00001929",
         },
         {
-          trait_type: "Eyes",
-          value: "googly",
-        },
-        {
-          trait_type: "Stamina",
-          value: 15,
+          trait_type: "Ending date",
+          value: "02/16/21",
         },
       ],
     },
     5: {
-      description: "So delicate.",
+      description: "Streaming 50 DAI per month...",
       external_url: "https://austingriffith.com/portfolio/paintings/", // <-- this can link to a page for the specific file too
-      image: "https://austingriffith.com/images/paintings/flamingo.jpg",
-      name: "Flamingo",
+      image: "https://i.ibb.co/D9jrQ78/nft.png",
+      name: "50 DAI Stream",
       attributes: [
         {
-          trait_type: "BackgroundColor",
-          value: "black",
+          trait_type: "flowrate",
+          value: "0.00001929",
         },
         {
-          trait_type: "Eyes",
-          value: "googly",
-        },
-        {
-          trait_type: "Stamina",
-          value: 6,
+          trait_type: "Ending date",
+          value: "02/16/21",
         },
       ],
     },
     6: {
-      description: "Raaaar!",
+      description: "Streaming 50 DAI per month",
       external_url: "https://austingriffith.com/portfolio/paintings/", // <-- this can link to a page for the specific file too
-      image: "https://austingriffith.com/images/paintings/godzilla.jpg",
-      name: "Godzilla",
+      image: "https://i.ibb.co/D9jrQ78/nft.png",
+      name: "50 DAI Stream",
       attributes: [
         {
-          trait_type: "BackgroundColor",
-          value: "orange",
+          trait_type: "flowrate",
+          value: "0.00001929",
         },
         {
-          trait_type: "Eyes",
-          value: "googly",
-        },
-        {
-          trait_type: "Stamina",
-          value: 99,
+          trait_type: "Ending date",
+          value: "02/16/21",
         },
       ],
     },
@@ -708,7 +707,7 @@ function App(props) {
               }}
               to="/"
             >
-              My Tokens 🪙
+              My Contracts 📃
             </Link>
           </Menu.Item>
           <Menu.Item key="/analyze">
@@ -866,6 +865,7 @@ function App(props) {
                 size="large"
                 onClick={() => {
                   tx(writeContracts.YourCollectible.transferFrom(address, recipientAddress, 0));
+                  launchStream(true);
                 }}
               >
                 🚀 Create Money Flow 🚀
