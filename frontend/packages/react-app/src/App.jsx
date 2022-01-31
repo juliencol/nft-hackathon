@@ -568,7 +568,7 @@ function App(props) {
   // the json for the nfts
   const json = {
     1: {
-      description: "Streaming 50 DAI per month...",
+      description: "Streaming 50 DAI per month",
       external_url: "https://austingriffith.com/portfolio/paintings/", // <-- this can link to a page for the specific file too
       image: "https://i.ibb.co/D9jrQ78/nft.png",
       name: "50 DAI Stream",
@@ -584,10 +584,10 @@ function App(props) {
       ],
     },
     2: {
-      description: "Streaming 50 DAI per month...",
+      description: "Streaming 3200 USDC per month",
       external_url: "https://austingriffith.com/portfolio/paintings/", // <-- this can link to a page for the specific file too
-      image: "https://i.ibb.co/D9jrQ78/nft.png",
-      name: "50 DAI Stream",
+      image: "https://i.ibb.co/514XK13/271414019-323019566501331-4971552231200149123-n.png",
+      name: "3200 USDC Stream",
       attributes: [
         {
           trait_type: "flowrate",
@@ -595,23 +595,23 @@ function App(props) {
         },
         {
           trait_type: "Ending date",
-          value: "02/16/21",
+          value: "04/16/20",
         },
       ],
     },
     3: {
-      description: "Streaming 50 DAI per month...",
+      description: "Streaming 1000 USDT per month",
       external_url: "https://austingriffith.com/portfolio/paintings/", // <-- this can link to a page for the specific file too
-      image: "https://i.ibb.co/D9jrQ78/nft.png",
-      name: "50 DAI Stream",
+      image: "https://i.ibb.co/NF9rKpH/271441399-267007945535569-8587406923684693720-n.png",
+      name: "1000 USDT Stream",
       attributes: [
         {
           trait_type: "flowrate",
-          value: "0.00001929",
+          value: "0.00038580",
         },
         {
           trait_type: "Ending date",
-          value: "02/16/21",
+          value: "09/26/19",
         },
       ],
     },
@@ -690,6 +690,56 @@ function App(props) {
       },
     );
   };
+  /* const mintItem2 = async () => {
+    // upload to ipfs
+    const uploaded = await ipfs.add(JSON.stringify(json[2]));
+    console.log("Uploaded Hash: ", uploaded);
+    const result = tx(
+      writeContracts &&
+        writeContracts.YourCollectible &&
+        writeContracts.YourCollectible.mintItem(address, uploaded.path),
+      update => {
+        console.log("📡 Transaction Update:", update);
+        if (update && (update.status === "confirmed" || update.status === 1)) {
+          console.log(" 🍾 Transaction " + update.hash + " finished!");
+          console.log(
+            " ⛽️ " +
+              update.gasUsed +
+              "/" +
+              (update.gasLimit || update.gas) +
+              " @ " +
+              parseFloat(update.gasPrice) / 1000000000 +
+              " gwei",
+          );
+        }
+      },
+    );
+  };
+  const mintItem3 = async () => {
+    // upload to ipfs
+    const uploaded = await ipfs.add(JSON.stringify(json[3]));
+    console.log("Uploaded Hash: ", uploaded);
+    const result = tx(
+      writeContracts &&
+        writeContracts.YourCollectible &&
+        writeContracts.YourCollectible.mintItem(address, uploaded.path),
+      update => {
+        console.log("📡 Transaction Update:", update);
+        if (update && (update.status === "confirmed" || update.status === 1)) {
+          console.log(" 🍾 Transaction " + update.hash + " finished!");
+          console.log(
+            " ⛽️ " +
+              update.gasUsed +
+              "/" +
+              (update.gasLimit || update.gas) +
+              " @ " +
+              parseFloat(update.gasPrice) / 1000000000 +
+              " gwei",
+          );
+        }
+      },
+    );
+  }; */
 
 
 
@@ -734,6 +784,36 @@ function App(props) {
         <Switch>
           <Route exact path="/">
             <div style={{ width: 640, margin: "auto", marginTop: 32, paddingBottom: 32 }}>
+              {/* <Button
+                disabled={minting}
+                shape="round"
+                size="large"
+                onClick={() => {
+                  mintItem();                  
+                }}
+              >
+                🪙 Generate Stream Token1 🪙
+              </Button>
+              <Button
+                disabled={minting}
+                shape="round"
+                size="large"
+                onClick={() => {
+                  mintItem2();                  
+                }}
+              >
+                🪙 Generate Stream Token2 🪙
+              </Button>
+              <Button
+                disabled={minting}
+                shape="round"
+                size="large"
+                onClick={() => {
+                  mintItem3();                  
+                }}
+              >
+                🪙 Generate Stream Token3 🪙
+              </Button> */}
               <List
                 bordered
                 dataSource={yourCollectibles}
